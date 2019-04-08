@@ -1,19 +1,30 @@
 
 import openfoodfacts
-
+import random
 
 categories = openfoodfacts.facets.get_categories()
-categories_20 = []
+categories_fr = []
 
-def list_categ():
+
+products = openfoodfacts.products.get_by_category("fr:gaufres-sucrees")
+
+def category_list_fr():
     i = 1
-    for dico in categories:
-        if i <= 20:
-            categories_20.append(dico['name'])
-            print("{}: {}".format(i, dico['name']))
+    for food in categories:
+        if "fr" in food['name']:
+            print("{}: {}".format(i, food['name']))
+            categories_fr.append(food)
             i = i+1
-        else:
-            break
+
+def substitute():
+    substitute_number = input("Selectionnez un élément: ")
+    substitute_number = int(substitute_number)
+    substitute_name = categories_fr[substitute_number - 1]['name']
+
+    substitute_number
+    substitute_list = openfoodfacts.products.get_by_category(substitute_name)
+    rand_sub = random.choice(substitute_list)
+    print(rand_sub)
 
 def main_loop():
     choix = input(
@@ -23,14 +34,13 @@ def main_loop():
             )
 
     if choix == "1":
-        list_categ(10)
+        category_list_fr()
+        substitute()
     elif choix == "2":
             print("en cours")
     else:
         print("echec")
 
-list_categ()
-print(categories_20)
 
-
+main_loop()
 

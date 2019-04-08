@@ -22,17 +22,6 @@ liste = [
     dico2, 
     dico3]
 
-test1 = liste[0]['nom']
-print(test1)
-
-
-for i in liste:
-    print(i)
-
-enumerate(categories)
-
-
-listezz = ['1','2','3']
-for item in enumerate(listezz):
-    print(item)
-print(enum_liss)
+for dico in liste:
+    if "nom" in dico:
+        print("Nom est dans {}".format(dico))
