@@ -44,39 +44,76 @@ def category_count(): # Display all french categories and add them in 'categorie
 
 
 display_food = openfoodfacts.products.get_by_category("Wines from France")
-
-search = openfoodfacts.products.get_product("3700214617724")
-
-
-
-list_of_snacks = []
-list_of_boissons = []
-list_of_viandes = []
-list_of_Charcuteries = []
-list_of_Desserts = []
+recherche = openfoodfacts.products.get_product("26038681")
+print(recherche)
 
 
+import openfoodfacts
 
-
-#add all the food with needed data in list "list_snacks"
-def add_food_in_category(category):
-    products = openfoodfacts.products.get_by_category(category)
+#add all the food with needed data in a list
+def add_food_in_list(category):
+    products = openfoodfacts.products.get_by_facets({
+    'category': category,
+    'language': 'france'
+    })
+    list_of_food = []
     for food in products:
-        rules = ['product_name' in food,
+        rules = ['product_name_fr' in food,
                 'nova_group' in food,
                 'countries_tags' in food,
-                'ingredients_text_fr' in food,
                 'stores_tags' in food,
                 ]
         if all(rules):
-            list_of_snacks.append([
+            list_of_food.append([
                 {'product_name' : food['product_name']},
                 {'nova_group' : food['nova_group']},
                 {'countries_tags' : food['countries_tags']},
-                {'ingredients_text_fr' : food['ingredients_text_fr']},
                 {'stores_tags' : food['stores_tags']},
-            ])
+                ])
             print("added successfully")
+    
+    return list_of_food
 
+# mes listes
+list_of_snacks = add_food_in_list('snacks')
+list_of_boissons = add_food_in_list('boissons')
+list_of_viandes = add_food_in_list('viandes')
+list_of_charcuteries = add_food_in_list('charcuteries')
+list_of_desserts = add_food_in_list('desserts')
         
- 
+
+# liste les noms des produits d'une liste
+for item in list_of_snacks:
+    for data in item:
+        if 'product_name' in data:
+            print(data['product_name'])
+
+
+# Si on execute cette recherche, on ne trouvera pas le produit " sarialis " dans la liste.
+# Alors que, sur le site, si on cherche dans les snacks français, on trouve bien Sarialis. 
+
+def test_rapide(category):
+    products = openfoodfacts.products.get_by_facets({
+    'category': category,
+    'language': 'france'
+    })
+    for item in products:
+        for data in item:
+            print(data)
+
+test_rapide('snacks')
+
+######
+
+def recherche_categorie(category):
+    products = openfoodfacts.products.get_by_facets({
+    'category': category,
+    'language': 'france'
+    })
+    for item in products:
+        if 'energy_value' in item['nutriments']:
+            print(item['nutriments']['energy_value'])
+
+
+
+recherche_categorie('boissons')
