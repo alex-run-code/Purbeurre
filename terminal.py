@@ -41,9 +41,12 @@ def display_categories():
     find_nutriscore = "SELECT nova_group FROM " + categories[choice][0] + " WHERE id =" + str(selected_food)
     mycursor.execute(find_nutriscore)
     nutriscore = mycursor.fetchall()
-    print(nutriscore)
-    #find_substitute = "SELECT * FROM " + categories[choice][0] + " WHERE nova_group >" + find_nutriscore + "ORDER BY RAND() LIMIT 1"
-    #mycursor.execute(find_nutriscore)
+    print("nutriscore is", nutriscore[0][0])
+    nustriscore = str(nutriscore[0][0])
+    find_substitute = "SELECT * FROM " + categories[choice][0] + " WHERE nova_group < " + nustriscore + " ORDER BY RAND() LIMIT 1"
+    mycursor.execute(find_substitute)
+    substitute = mycursor.fetchall()
+    print(substitute)
 
 
 
