@@ -41,14 +41,35 @@ def display_categories():
     find_nutriscore = "SELECT nova_group FROM " + categories[choice][0] + " WHERE id =" + str(selected_food)
     mycursor.execute(find_nutriscore)
     nutriscore = mycursor.fetchall()
-    print("nutriscore is", nutriscore[0][0])
     nustriscore = str(nutriscore[0][0])
     find_substitute = "SELECT * FROM " + categories[choice][0] + " WHERE nova_group < " + nustriscore + " ORDER BY RAND() LIMIT 1"
     mycursor.execute(find_substitute)
     substitute = mycursor.fetchall()
-    print(substitute)
+    if len(substitute) == 0: 
+        print("Ce produit est l'un des plus sain de cette catégorie") 
+    else:
+        stores = substitute[0][4]
+        print("Vous avez séléctionné: {}\n"
+            "Cet aliment a un nutriscore de: {}\n"
+            "\nVoici un aliment plus sain de la même catégorie:\n"
+            "Nom: {}\n"
+            "Nutriscore: {}"
+            .format(product_names[selected_food][0], nustriscore, substitute[0][1], substitute[0][2]))
+        if len(stores) != 2:
+            print("Où l'acheter: {}\n".format(stores))
+        save = input("Voulez vous sauvegarder cet aliment de substitution ? [Y/N]")
+        if save.upper() == "Y":
+            nom_aliment = str(substitute[0][1])
+            sql = "INSERT INTO sauvegarde (Product_name) VALUES (%s)"
+            val = (nom_aliment,)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            print("élément sauvegardé !")
+        else:
+            print("Bonne journée !")
+        
 
-
+    
 
 
 
