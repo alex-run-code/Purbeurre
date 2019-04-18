@@ -1,73 +1,51 @@
 CREATE DATABASE PurBeurreDb;
 
 
-CREATE TABLE snacks(
+CREATE TABLE categories(
     id SMALLINT NOT NULL AUTO_INCREMENT,
-    Product_name VARCHAR(250) NOT NULL,
-    nova_group INT(1) NOT NULL,
-    countries_tags TEXT(1000) NOT NULL,
-    stores_tags TEXT(1000),
-    energy INT(10) NOT NULL,
+    category_name VARCHAR(250) UNIQUE NOT NULL,
     PRIMARY KEY (id)
 )
 ENGINE = INNODB;
 
-CREATE TABLE boissons(
+ALTER TABLE categories
+ADD INDEX index_categ (category_name);
+
+CREATE TABLE foods(
     id SMALLINT NOT NULL AUTO_INCREMENT,
     Product_name VARCHAR(250) NOT NULL,
     nova_group INT(1) NOT NULL,
+    category_name VARCHAR(250) NOT NULL,
     countries_tags TEXT(1000) NOT NULL,
     stores_tags TEXT(1000),
-    energy INT(10) NULL,
     PRIMARY KEY (id)
 )
 ENGINE = INNODB;
 
-CREATE TABLE viandes(
-    id SMALLINT NOT NULL AUTO_INCREMENT,
-    Product_name VARCHAR(250) NOT NULL,
-    nova_group INT(1) NOT NULL,
-    countries_tags TEXT(1000) NOT NULL,
-    stores_tags TEXT(1000),
-    energy INT(10) NOT NULL,
-    PRIMARY KEY (id)
-)
-ENGINE = INNODB;
+ALTER TABLE foods
+ADD FOREIGN KEY (category_name) REFERENCES categories(category_name);
 
-CREATE TABLE charcuteries(
-    id SMALLINT NOT NULL AUTO_INCREMENT,
-    Product_name VARCHAR(250) NOT NULL,
-    nova_group INT(1) NOT NULL,
-    countries_tags TEXT(1000) NOT NULL,
-    stores_tags TEXT(1000),
-    energy INT(10) NOT NULL,
-    PRIMARY KEY (id)
-)
-ENGINE = INNODB;
 
-CREATE TABLE desserts(
+CREATE TABLE favorites(
     id SMALLINT NOT NULL AUTO_INCREMENT,
     Product_name VARCHAR(250) NOT NULL,
-    nova_group INT(1) NOT NULL,
-    countries_tags TEXT(1000) NOT NULL,
-    stores_tags TEXT(1000),
-    energy INT(10) NOT NULL,
     PRIMARY KEY (id)
 )
 ENGINE = INNODB;
 
 
-DROP TABLE boissons;
-DROP TABLE snacks;
-DROP TABLE viandes;
-DROP TABLE desserts;
-DROP TABLE charcuteries;
+-- commandes utiles 
+
+DROP TABLE foods;
+DROP TABLE categories;
+DROP TABLE favorites;
+
+SELECT * FROM foods;
+SELECT * FROM categories;
+SELECT * FROM favorites;
+
+ALTER TABLE foods
+DROP column energy;
 
 
-
-SELECT * FROM boissons;
-SELECT * FROM snacks;
-SELECT * FROM viandes;
-SELECT * FROM desserts;
-SELECT * FROM charcuteries;
 

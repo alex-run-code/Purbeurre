@@ -1,4 +1,3 @@
-import openfoodfacts
 import mysql.connector
 
 # Initializing database
@@ -20,29 +19,31 @@ def display_terminal():
     "\nVotre choix: ")
     if choice == "1":
         display_categories()
+    elif choice =="2":
+        display_saved_food()
     else: 
         print("en chantier")
         
 # This function display the categories
 def display_categories():
-    mycursor.execute("SHOW TABLES")
+    mycursor.execute('SELECT category_name FROM categories')
     categories = mycursor.fetchall()     # for some reason this doesnt simply add the table " boissons " but a tuple: " ('boisson',) "
     for i, item in enumerate(categories):
         print(i+1,"-",item[0])
     choice = input("Selectionnez une catégorie\n \nVotre choix: ")
     choice = int(choice) - 1
-    sql = " SELECT Product_name AS Aliment FROM " + categories[choice][0]
+    sql = " SELECT Product_name AS Aliment FROM foods WHERE category_name = '" + str(categories[choice][0]) + "'"
     mycursor.execute(sql)
     product_names = mycursor.fetchall()
     for i, item in enumerate(product_names):
         print(i+1, "-", item[0])           # meme probleme que plus haut, ca renvoie des tuples et non simplement le nom des aliments
     selected_food = input("Selectionnez un aliment à substituer\n \nVotre choix: ")
     selected_food = int(selected_food)
-    find_nutriscore = "SELECT nova_group FROM " + categories[choice][0] + " WHERE id =" + str(selected_food)
+    find_nutriscore = "SELECT nova_group FROM foods WHERE Product_name = '" + str(product_names[selected_food][0]) + "'"
     mycursor.execute(find_nutriscore)
     nutriscore = mycursor.fetchall()
     nustriscore = str(nutriscore[0][0])
-    find_substitute = "SELECT * FROM " + categories[choice][0] + " WHERE nova_group < " + nustriscore + " ORDER BY RAND() LIMIT 1"
+    find_substitute = "SELECT * FROM foods WHERE nova_group < " + nustriscore + " ORDER BY RAND() LIMIT 1"
     mycursor.execute(find_substitute)
     substitute = mycursor.fetchall()
     if len(substitute) == 0: 
@@ -60,7 +61,7 @@ def display_categories():
         save = input("Voulez vous sauvegarder cet aliment de substitution ? [Y/N]")
         if save.upper() == "Y":
             nom_aliment = str(substitute[0][1])
-            sql = "INSERT INTO sauvegarde (Product_name) VALUES (%s)"
+            sql = "INSERT INTO favorites (Product_name) VALUES (%s)"
             val = (nom_aliment,)
             mycursor.execute(sql, val)
             mydb.commit()
@@ -69,10 +70,11 @@ def display_categories():
             print("Bonne journée !")
         
 
-    
-
-
-
+def display_saved_food():
+    mycursor.execute("SELECT Product_name FROM favorites")
+    saved_food = mycursor.fetchall()
+    for food in saved_food:
+        print(food[0])
 
 
 
