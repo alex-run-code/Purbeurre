@@ -22,6 +22,7 @@ def add_food_in_db(category):
                 'nova_group' in food,
                 'countries_tags' in food,
                 'stores_tags' in food,
+                'url' in food, 
                 ]
         if not all(rules):
             continue
@@ -31,31 +32,37 @@ def add_food_in_db(category):
         nova_group = str(food['nova_group'])
         countries_tags = str(food['countries_tags'])
         stores_tags = str(food['stores_tags'])
-        add_food_sql = "INSERT INTO foods (Product_name, nova_group, category_name, countries_tags, stores_tags) VALUES (%s, %s, %s, %s, %s)"
-        val_food_sql = [(Product_name_fr, nova_group, category, countries_tags, stores_tags)]
+        url = str(food['url'])
+        add_food_sql = "INSERT INTO foods (Product_name, nova_group, category_name, countries_tags, stores_tags, off_url) VALUES (%s, %s, %s, %s, %s, %s)"
+        val_food_sql = [(Product_name_fr, nova_group, category, countries_tags, stores_tags, url)]
         mycursor.executemany(add_food_sql, val_food_sql)
         mydb.commit()
         print("added successfully")
 
+# This function add a category in the database
 def add_category_in_db(category):
     add_category_sql = 'INSERT INTO categories (category_name) VALUES (%s)'
     val_cat_sql = [(category,)]
     mycursor.executemany(add_category_sql, val_cat_sql)
     mydb.commit()
 
-#add a category in the table 'categories'
-add_category_in_db('snacks')
-add_category_in_db('boissons')
-add_category_in_db('desserts')
-add_category_in_db('viandes')
-add_category_in_db('charcuteries')
+# Add a category in the table 'categories'
+def fill_categories():
+    add_category_in_db('snacks')
+    add_category_in_db('boissons')
+    add_category_in_db('desserts')
+    add_category_in_db('viandes')
+    add_category_in_db('charcuteries')
 
-#add all the foods from selected categories in the table 'foods'
-add_food_in_db('snacks')
-add_food_in_db('boissons')
-add_food_in_db('desserts')
-add_food_in_db('viandes')
-add_food_in_db('charcuteries')
+# Add all the foods from selected categories in the table 'foods'
+def fill_foods():
+    add_food_in_db('snacks')
+    add_food_in_db('boissons')
+    add_food_in_db('desserts')
+    add_food_in_db('viandes')
+    add_food_in_db('charcuteries')
+
+fill_foods()
 
 
 
