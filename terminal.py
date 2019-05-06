@@ -1,10 +1,11 @@
 import mysql.connector
+import config
 
 # Initializing database
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  passwd="210991"
+  host=config.DB_HOST,
+  user=config.DB_USER,
+  passwd=config.DB_PASSWD
 )
 
 mycursor = mydb.cursor(buffered=True)
@@ -37,31 +38,52 @@ def display_categories():
         print('{} - {}'.format(item[0], item[1]))
 
     #select category
-    choice = input("Selectionnez l'id d'une categorie\n \nVotre choix: ")
-    sql = " SELECT * FROM foods WHERE category_id = '" + choice + "' ORDER BY id"
-    mycursor.execute(sql)
+    while True:
+        choice = input("Selectionnez l'id d'une categorie\n \nVotre choix: ")
+        try:
+            if int(choice) > len(categories):
+                print("Veuillez entrer un numero correspondant a une categorie")
+            else:
+                break
+        except ValueError:
+            print("Veuillez entrer un numero correspondant a une categorie")
+    sql = " SELECT * FROM foods WHERE category_id = %s ORDER BY id"
+    val = [choice]
+    mycursor.execute(sql, val)
     foods = mycursor.fetchall()
     for item in foods:
         print('{} - {}'.format(item[0], item[1]))
 
     #select food
-    selected_food_id = input("Selectionnez un aliment à substituer\n \nVotre choix: ")
-    selected_food_id = str(selected_food_id)
-    find_nutriscore = "SELECT nova_group FROM foods WHERE id = '" + selected_food_id + "'"
-    mycursor.execute(find_nutriscore)
+    while True:
+        selected_food_id = input("Selectionnez un aliment à substituer\n \nVotre choix: ")
+        try: 
+            if int(selected_food_id) > foods[len(foods)-1][0] or int(selected_food_id) < foods[0][0]:
+                print("Veuillez entrer un numero correspondant a un aliment")
+            else:
+                break
+        except:
+            print("Veuillez entrer un numero")
+    sql = 'SELECT nova_group FROM foods WHERE id = %s'
+    val = [selected_food_id]
+    mycursor.execute(sql, val)
     nutriscore = mycursor.fetchall()
-    nustriscore = str(nutriscore[0][0])
-    find_substitute = "SELECT * FROM foods WHERE nova_group < " + nustriscore + " AND category_id = '" + choice + "' ORDER BY RAND() LIMIT 1"
-    mycursor.execute(find_substitute)
+    find_substitute = "SELECT * FROM foods WHERE nova_group < %s AND category_id = %s ORDER BY RAND() LIMIT 1"
+    val = [(nutriscore[0][0], choice[0][0])]
+    mycursor.executemany(find_substitute, val)
     substitute = mycursor.fetchall()
 
     #display substitute
     if len(substitute) == 0: 
         print("Ce produit est l'un des plus sain de cette catégorie") 
     else:
-        mycursor.execute("SELECT stores_id FROM foods_stores WHERE foods_id = " + str(substitute[0][0]))
+        sql = ' SELECT stores_id FROM foods_stores WHERE foods_id = %s '
+        val = [(substitute[0][0],)]
+        mycursor.executemany(sql, val)
         stores_id = mycursor.fetchall()
-        mycursor.execute("SELECT product_name FROM foods WHERE id = '" + str(selected_food_id) + "'")
+        sql = 'SELECT product_name FROM foods WHERE id = %s'
+        val = [(selected_food_id,)]
+        mycursor.executemany(sql,val)
         selected_food = mycursor.fetchall()
         print("Vous avez séléctionné: {}\n"
             "Cet aliment a un nutriscore de: {}\n"
@@ -69,20 +91,24 @@ def display_categories():
             "Nom: {}\n"
             "Nutriscore: {}\n"
             "Page OpenFoodFact: {}\n"
-            .format(selected_food[0][0], nustriscore, substitute[0][1], substitute[0][2], substitute[0][4]))
+            .format(selected_food[0][0], nutriscore[0][0], substitute[0][1], substitute[0][2], substitute[0][4]))
         if len(stores_id) != 0:
             print("Ou l'acheter:")
             for store_id in stores_id:
-                mycursor.execute("SELECT * FROM stores WHERE id = " + str(store_id[0]))
+                sql = 'SELECT * FROM stores WHERE id = %s'
+                val = [(store_id[0],)]
+                mycursor.executemany(sql, val)
                 stores_name = mycursor.fetchall()
                 print(stores_name[0][1])
 
         #Save substitute
         save = input("Voulez vous sauvegarder cet aliment de substitution ? [Y/N]")
         if save.upper() == "Y":
-            mycursor.execute("SELECT id FROM foods WHERE product_name = '" + str(substitute[0][1]) + "'")
+            sql = 'SELECT id FROM foods WHERE product_name = %s'
+            val = [(substitute[0][1],)]
+            mycursor.executemany(sql,val)
             foods_subs_id = mycursor.fetchall()
-            sql = "INSERT INTO favorites (foods_id, foods_subs_id) VALUES (%s, %s)"
+            sql = "INSERT IGNORE INTO favorites (foods_id, foods_subs_id) VALUES (%s, %s)" #we add ignore in case of a duplicate
             val = (selected_food_id, foods_subs_id[0][0])
             mycursor.execute(sql, val)
             mydb.commit()
@@ -95,14 +121,15 @@ def display_saved_food():
     mycursor.execute("SELECT foods_subs_id, foods_id FROM favorites")
     fav_id_list = mycursor.fetchall()
     for item in fav_id_list:
-        mycursor.execute("SELECT product_name FROM foods WHERE id = " + str(item[0]))
+        sql = 'SELECT product_name FROM foods WHERE id = %s'
+        val = [(item[0],)]
+        mycursor.executemany(sql, val)
         foods_subs_name = mycursor.fetchall()
-        mycursor.execute("SELECT product_name FROM foods WHERE id = " + str(item[1]))
+        sql = 'SELECT product_name FROM foods WHERE id = %s'
+        val = [(item[1],)]
+        mycursor.executemany(sql, val)
         foods_id_name = mycursor.fetchall()
         print(" - {} (remplace l'aliment: {})".format(foods_subs_name[0][0] , foods_id_name[0][0]))
-    #saved_food = mycursor.fetchall()
-    #for food in saved_food:
-        #print(food)
 
 
 display_terminal()

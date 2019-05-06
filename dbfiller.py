@@ -1,10 +1,12 @@
 import mysql.connector
 import openfoodfacts
+import config
+
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  passwd="210991"
+  host=config.DB_HOST,
+  user=config.DB_USER,
+  passwd=config.DB_PASSWD
 )
 
 mycursor = mydb.cursor(buffered=True)
@@ -13,8 +15,8 @@ mycursor.execute("USE PurBeurredb")
 #This function download some data from OFF's db to our mysql db (PurBeurreDb)
 def add_food_in_db(category):
     products = openfoodfacts.products.get_by_facets({
-    'category': category,
-    'language': 'france'
+        'category': category,
+        'language': 'france'
     })
     list_of_food = []
     for food in products:
@@ -25,11 +27,11 @@ def add_food_in_db(category):
                 ]
         if not all(rules):
             continue
-        if len(food['product_name_fr']) == 0:
+        if not food['product_name_fr'].strip():
             continue
-        product_name_fr = str(food['product_name_fr'])
-        nova_group = str(food['nova_group'])
-        url = str(food['url'])
+        product_name_fr = food['product_name_fr']
+        nova_group = food['nova_group']
+        url = food['url']
         stores_tags = food['stores_tags']
         #adding store in stores
         for store in stores_tags:
@@ -38,7 +40,9 @@ def add_food_in_db(category):
             mycursor.executemany(add_store_sql, val_store_sql)
             mydb.commit()
         #adding food in foods
-        mycursor.execute("SELECT id FROM categories WHERE category_name = '" + category + "'")
+        sql = "SELECT id FROM categories WHERE category_name = %s"
+        val = [(category,)]
+        mycursor.executemany(sql, val)
         category_id = mycursor.fetchall()
         category_id = category_id[0][0]
         add_food_sql = "INSERT IGNORE INTO foods (product_name, nova_group, category_id, off_url) VALUES (%s, %s, %s, %s)"
@@ -47,10 +51,14 @@ def add_food_in_db(category):
         mydb.commit()
         #adding foods id and stores id in foods stores
         for store in stores_tags:
-            mycursor.execute('SELECT id FROM foods WHERE product_name = "' + product_name_fr + '"')
+            sql = ' SELECT id FROM foods WHERE product_name = %s '
+            val = [(product_name_fr,)]
+            mycursor.executemany(sql, val)
             foods_id = mycursor.fetchall()
             foods_id = int(foods_id[0][0])
-            mycursor.execute("SELECT id FROM stores WHERE stores_name = '" + store + "'")
+            sql = ' SELECT id FROM stores WHERE stores_name = %s '
+            val = [store]
+            mycursor.execute(sql, val)
             stores_id = mycursor.fetchall()
             stores_id = int(stores_id[0][0])
             add_foods_id_sql = "INSERT INTO foods_stores (foods_id, stores_id) VALUES (%s, %s)"
@@ -85,6 +93,5 @@ def fill_foods():
 
 
 
-fill_categories()
+#fill_categories()
 fill_foods()
-
