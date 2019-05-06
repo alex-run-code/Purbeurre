@@ -22,3 +22,5 @@ urllib3==1.24.1
 virtualenv==16.4.3
 xlrd==1.2.0
 xlwt==1.3.0
+
+rename config_exemple.py into config.py

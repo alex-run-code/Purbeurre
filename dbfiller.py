@@ -92,6 +92,9 @@ def fill_foods():
 
 
 
-
-#fill_categories()
-fill_foods()
+a = 0
+if a == 0:
+    fill_categories()
+    a = 1
+if a == 1:
+    fill_foods()
