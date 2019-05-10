@@ -78,12 +78,12 @@ def display_categories():
         print("Ce produit est l'un des plus sain de cette catégorie") 
     else:
         sql = ' SELECT stores_id FROM foods_stores WHERE foods_id = %s '
-        val = [(substitute[0][0],)]
-        mycursor.executemany(sql, val)
+        val = [(substitute[0][0])]
+        mycursor.execute(sql, val)
         stores_id = mycursor.fetchall()
         sql = 'SELECT product_name FROM foods WHERE id = %s'
-        val = [(selected_food_id,)]
-        mycursor.executemany(sql,val)
+        val = [(selected_food_id)]
+        mycursor.execute(sql,val)
         selected_food = mycursor.fetchall()
         print("Vous avez séléctionné: {}\n"
             "Cet aliment a un nutriscore de: {}\n"
@@ -96,8 +96,8 @@ def display_categories():
             print("Ou l'acheter:")
             for store_id in stores_id:
                 sql = 'SELECT * FROM stores WHERE id = %s'
-                val = [(store_id[0],)]
-                mycursor.executemany(sql, val)
+                val = [(store_id[0])]
+                mycursor.execute(sql, val)
                 stores_name = mycursor.fetchall()
                 print(stores_name[0][1])
 
@@ -105,8 +105,8 @@ def display_categories():
         save = input("Voulez vous sauvegarder cet aliment de substitution ? [Y/N]")
         if save.upper() == "Y":
             sql = 'SELECT id FROM foods WHERE product_name = %s'
-            val = [(substitute[0][1],)]
-            mycursor.executemany(sql,val)
+            val = [(substitute[0][1])]
+            mycursor.execute(sql,val)
             foods_subs_id = mycursor.fetchall()
             sql = "INSERT IGNORE INTO favorites (foods_id, foods_subs_id) VALUES (%s, %s)" #we add ignore in case of a duplicate
             val = (selected_food_id, foods_subs_id[0][0])
@@ -122,12 +122,12 @@ def display_saved_food():
     fav_id_list = mycursor.fetchall()
     for item in fav_id_list:
         sql = 'SELECT product_name FROM foods WHERE id = %s'
-        val = [(item[0],)]
-        mycursor.executemany(sql, val)
+        val = [(item[0])]
+        mycursor.execute(sql, val)
         foods_subs_name = mycursor.fetchall()
         sql = 'SELECT product_name FROM foods WHERE id = %s'
-        val = [(item[1],)]
-        mycursor.executemany(sql, val)
+        val = [(item[1])]
+        mycursor.execute(sql, val)
         foods_id_name = mycursor.fetchall()
         print(" - {} (remplace l'aliment: {})".format(foods_subs_name[0][0] , foods_id_name[0][0]))
 

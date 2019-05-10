@@ -1,49 +1,38 @@
 # Purbeurre
 
-# dbfiller.py
+## What is PurBeurre ? 
 
-Ce programme sert à remplir la base de donner. 
+Purbeurre is an application whose purpose is to give healthier alternative to the foods we eat every day.
+Select a food and it will suggest you another one, healthier, from the same category
 
-## add_food_in_db(category)
+## How to use the program
 
-Cette fonction ajoute la liste des aliments de la catégorie choisie dans la base de donnée. 
+### First, install the requirement.txt 
 
-## add_category_in_db(category)
+Type **pip install requirement.txt**
 
-Cette fonction ajoute la catégorie choisie dans la base de donnée.
+### Create a database  
 
-## fill_categories()
+Create a mysql database called Purbeurredb. 
 
-Cette fonction ajoute une liste de catégorie pré-définies dans la base de donnée. 
+### Rename the config_exemple.py file
 
-## fill_foods()
+Rename config_exemple.py to config.py.
+Inside, replace:
+- DB_HOST = _"localhost"_ with the SQL server adress;
+- DB_USER = _"root"_ with your username;
+- DB_PASSWD = _""_ with your password;
 
-Cette fonction ajoute les aliments appartenant aux catégories choisies dans la base de donnée. 
+### How to load the database 
 
-# purbeurre.py
+Execute:
+**mysql -h server -u username -p purbeurredb>purbeurredb.sql**
+(*replace server with your sql server, username with your username before launching*)
 
-Il s'agit du programme principal
+Then, execute **dbfiller.py**
 
-## display_terminal()
+### Launch
 
-Cette fonction affiche le terminal avec lequel l'utilisateur va interagir 
+Execute **purbeurre.py**
 
-### display_terminal - select category
 
-Il est d'abord demandé à l'utilisation de selectionner une catégorie
-
-### display_terminal - select category
-
-L'utilisateur choisi ensuite un aliment
-
-### display_terminal - display substitute
-
-Si le programme trouve un aliment plus sain dans la base de donnée, il est proposé à l'utilisateur. 
-
-### display_terminal - Save substitute
-
-Le programme propose enfin à l'utilisateur de sauvegardé le substitue.
-
-## display_saved_food()
-
-Cette fonction affiche la liste d'éléments sauvegardés

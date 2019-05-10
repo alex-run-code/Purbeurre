@@ -36,13 +36,13 @@ def add_food_in_db(category):
         #adding store in stores
         for store in stores_tags:
             add_store_sql = "INSERT IGNORE INTO stores (stores_name) values (%s)"
-            val_store_sql = [(store,)]
-            mycursor.executemany(add_store_sql, val_store_sql)
+            val_store_sql = [(store)]
+            mycursor.execute(add_store_sql, val_store_sql)
             mydb.commit()
         #adding food in foods
         sql = "SELECT id FROM categories WHERE category_name = %s"
-        val = [(category,)]
-        mycursor.executemany(sql, val)
+        val = [(category)]
+        mycursor.execute(sql, val)
         category_id = mycursor.fetchall()
         category_id = category_id[0][0]
         add_food_sql = "INSERT IGNORE INTO foods (product_name, nova_group, category_id, off_url) VALUES (%s, %s, %s, %s)"
@@ -52,8 +52,8 @@ def add_food_in_db(category):
         #adding foods id and stores id in foods stores
         for store in stores_tags:
             sql = ' SELECT id FROM foods WHERE product_name = %s '
-            val = [(product_name_fr,)]
-            mycursor.executemany(sql, val)
+            val = [(product_name_fr)]
+            mycursor.execute(sql, val)
             foods_id = mycursor.fetchall()
             foods_id = int(foods_id[0][0])
             sql = ' SELECT id FROM stores WHERE stores_name = %s '
@@ -70,8 +70,8 @@ def add_food_in_db(category):
 # This function add a category in the database
 def add_category_in_db(category):
     add_category_sql = 'INSERT IGNORE INTO categories (category_name) VALUES (%s)'
-    val_cat_sql = [(category,)]
-    mycursor.executemany(add_category_sql, val_cat_sql)
+    val_cat_sql = [(category)]
+    mycursor.execute(add_category_sql, val_cat_sql)
     mydb.commit()
 
 # Add a category in the table 'categories'
@@ -92,9 +92,6 @@ def fill_foods():
 
 
 
-a = 0
-if a == 0:
-    fill_categories()
-    a = 1
-if a == 1:
-    fill_foods()
+
+fill_categories()
+fill_foods()

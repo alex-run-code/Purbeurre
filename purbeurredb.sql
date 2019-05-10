@@ -1,4 +1,3 @@
-CREATE DATABASE PurBeurreDb;
 
 CREATE TABLE categories(
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -55,17 +54,3 @@ ADD FOREIGN KEY (stores_id) REFERENCES stores(id);
 
 
 
--- commandes utiles 
-
-DROP TABLE foods_stores;
-DROP TABLE stores;
-DROP TABLE favorites;
-DROP TABLE foods;
-DROP TABLE categories;
-
-
-
-
-SELECT * FROM foods;
-SELECT * FROM categories;
-SELECT * FROM favorites;
